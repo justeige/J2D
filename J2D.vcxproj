@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Event_Bus\Event_Bus.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
+    <ClCompile Include="src\ECS\Entity.cpp" />
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\Systems\Animation_System.cpp" />
     <ClCompile Include="src\Asset_Store.cpp" />
@@ -32,10 +34,44 @@
     <ClCompile Include="libs\imgui\imgui_sdl.cpp" />
     <ClCompile Include="libs\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Systems\Collision_System.cpp" />
+    <ClCompile Include="src\Systems\Damage_System.cpp" />
     <ClCompile Include="src\Systems\Movement_System.cpp" />
     <ClCompile Include="src\Systems\Render_System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Event_Bus\Event.h" />
+    <ClInclude Include="src\Event_Bus\Event_Bus.h" />
+    <ClInclude Include="JUL\Array_Ext.h" />
+    <ClInclude Include="JUL\Bit.h" />
+    <ClInclude Include="JUL\Chrono_Ext.h" />
+    <ClInclude Include="JUL\Container.h" />
+    <ClInclude Include="JUL\Convert.h" />
+    <ClInclude Include="JUL\Defer.h" />
+    <ClInclude Include="JUL\Either.h" />
+    <ClInclude Include="JUL\File.h" />
+    <ClInclude Include="JUL\Macros.h" />
+    <ClInclude Include="JUL\Map_Ext.h" />
+    <ClInclude Include="JUL\Memory.h" />
+    <ClInclude Include="JUL\Non_Copyable.h" />
+    <ClInclude Include="JUL\Pointer.h" />
+    <ClInclude Include="JUL\Print.h" />
+    <ClInclude Include="JUL\Profiling.h" />
+    <ClInclude Include="JUL\Random.h" />
+    <ClInclude Include="JUL\Ring.h" />
+    <ClInclude Include="JUL\Set_Ext.h" />
+    <ClInclude Include="JUL\Sort.h" />
+    <ClInclude Include="JUL\Spin_Lock.h" />
+    <ClInclude Include="JUL\String_Ext.h" />
+    <ClInclude Include="JUL\Strong_Type.h" />
+    <ClInclude Include="JUL\Thread_Pool.h" />
+    <ClInclude Include="JUL\Tuple_Ext.h" />
+    <ClInclude Include="JUL\Types.h" />
+    <ClInclude Include="JUL\Variant_Ext.h" />
+    <ClInclude Include="JUL\Vec2.h" />
+    <ClInclude Include="JUL\Vec3.h" />
+    <ClInclude Include="JUL\Vector_Ext.h" />
+    <ClInclude Include="src\Components\Box_Collider_Component.h" />
     <ClInclude Include="src\ECS\Component.h" />
     <ClInclude Include="src\ECS\Entity.h" />
     <ClInclude Include="src\ECS\Entity_impl.h" />
@@ -44,6 +80,7 @@
     <ClInclude Include="src\ECS\Registry_impl.h" />
     <ClInclude Include="src\ECS\Signature.h" />
     <ClInclude Include="src\ECS\System.h" />
+    <ClInclude Include="src\Events\Collision_Event.h" />
     <ClInclude Include="src\Systems\Animation_System.h" />
     <ClInclude Include="src\Asset_Id.h" />
     <ClInclude Include="src\Asset_Store.h" />
@@ -311,6 +348,8 @@
     <ClInclude Include="libs\lua\lualib.h" />
     <ClInclude Include="libs\sol\sol.hpp" />
     <ClInclude Include="src\SDL_fwd.h" />
+    <ClInclude Include="src\Systems\Collision_System.h" />
+    <ClInclude Include="src\Systems\Damage_System.h" />
     <ClInclude Include="src\Systems\Movement_System.h" />
     <ClInclude Include="src\Systems\Render_System.h" />
     <ClInclude Include="src\Systems\Systems.h" />
@@ -462,26 +501,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -505,7 +544,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\libs;$(SolutionDir)\SDL2\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\libs;$(SolutionDir)\SDL2\include;$(SolutionDir)\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\SDL2\lib\x86;$(SolutionDir)\libs\lua;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

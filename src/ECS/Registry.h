@@ -1,11 +1,11 @@
 #ifndef REGISTRY_H
 #define REGISTRY_H
 
-#include <vector>
-#include <unordered_map>
+#include <JUL/Container.h>
+#include <JUL/Pointer.h>
+using namespace jul;
+
 #include <typeindex>
-#include <memory>
-#include <set>
 
 #include "Signature.h"
 #include "System.h"
@@ -15,10 +15,20 @@
 class Registry {
 public:
 
+	// ---------------------
+	// Manage entities
+	// ---------------------
+
 	Entity create_entity();
 	void kill_entity(Entity e);
-	void update();
+	void update_entities();
 	void add_entity_to_systems(Entity e);
+	void remove_entity_from_systems(Entity e);
+
+
+	// ---------------------
+	// Manage components
+	// ---------------------
 
 	template <class T, class ...TArgs>
 	void add_component(Entity e, TArgs&& ...args);
@@ -33,6 +43,11 @@ public:
 	T& component(Entity e) const;
 
 
+
+	// ---------------------
+	// Manage systems
+	// ---------------------
+
 	template <class TSystem, class ...TArgs>
 	void add_system(TArgs&& ...args);
 
@@ -46,13 +61,13 @@ public:
 	TSystem& system() const;
 
 private:
-	int num_entities = 0;
-
-	std::set<Entity> entities_to_be_added;
-	std::set<Entity> entities_to_be_removed;
-	std::vector<std::shared_ptr<Object_Pool_Base>> component_pools;
-	std::vector<Signature> entity_component_signatures;
-	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
+	int            m_num_entities = 0;
+	Deq<int>       m_free_ids;
+	Set<Entity>    m_entities_to_be_added;
+	Set<Entity>    m_entities_to_be_removed;
+	Vec<Signature> m_entity_component_signatures;
+	Vec<Shared<Object_Pool_Base>>         m_component_pools;
+	UMap<std::type_index, Shared<System>> m_systems;
 };
 
 #endif // REGISTRY_H

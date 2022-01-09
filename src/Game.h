@@ -1,12 +1,7 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 
 #include <memory>
-
-#include "SDL_fwd.h"
-
-class Registry;
-class Asset_Store;
-
 
 
 class Game {
@@ -23,8 +18,10 @@ private:
 	void update();
 	void render();
 	void setup();
+	void load_tilemap(const char* name);
 
 	struct Data;
 	std::unique_ptr<Data> m;
 };
 
+#endif // !GAME_H

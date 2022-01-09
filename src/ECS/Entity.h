@@ -10,32 +10,14 @@ public:
 
 	int id() const { return m_id; }
 	Registry* registry() const { return m_registry; }
+	void kill();
 
-	Entity& operator =(const Entity& other)
-	{
-		m_id = other.id();
-		return *this;
-	}
 
-	bool operator == (const Entity& other) const
-	{
-		return m_id == other.id();
-	}
-
-	bool operator != (const Entity& other) const
-	{
-		return m_id != other.id();
-	}
-
-	bool operator < (const Entity& other) const
-	{
-		return m_id < other.id();
-	}
-
-	bool operator > (const Entity& other) const
-	{
-		return m_id > other.id();
-	}
+	Entity& operator =(const Entity& other);
+	bool operator == (const Entity& other) const;
+	bool operator != (const Entity& other) const;
+	bool operator <  (const Entity& other) const;
+	bool operator >  (const Entity& other) const;
 
 	template <class T, class ...TArgs>
 	void add_component(TArgs&& ...args);

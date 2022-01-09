@@ -15,11 +15,19 @@
 
 int main(int argc, char** argv) 
 {
-    Game game;
+	try
+	{
+		Game game;
 
-    game.init();
-    game.run();
-    game.destroy();
+		game.init();
+		game.run();
+		game.destroy();
+
+	}
+	catch (const std::exception& ex)
+	{
+		std::cout << ex.what() << '\n';
+	}
 
     return 0;
 }

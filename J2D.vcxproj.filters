@@ -17,6 +17,10 @@
     <ClCompile Include="src\ECS\System.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\Registry.cpp" />
+    <ClCompile Include="src\Systems\Collision_System.cpp" />
+    <ClCompile Include="src\ECS\Entity.cpp" />
+    <ClCompile Include="src\Event_Bus\Event_Bus.cpp" />
+    <ClCompile Include="src\Systems\Damage_System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\glm\detail\_features.hpp" />
@@ -297,6 +301,41 @@
     <ClInclude Include="src\ECS\Registry_impl.h" />
     <ClInclude Include="src\ECS\Entity_impl.h" />
     <ClInclude Include="src\Systems\Systems.h" />
+    <ClInclude Include="JUL\Array_Ext.h" />
+    <ClInclude Include="JUL\Bit.h" />
+    <ClInclude Include="JUL\Chrono_Ext.h" />
+    <ClInclude Include="JUL\Container.h" />
+    <ClInclude Include="JUL\Convert.h" />
+    <ClInclude Include="JUL\Defer.h" />
+    <ClInclude Include="JUL\Either.h" />
+    <ClInclude Include="JUL\File.h" />
+    <ClInclude Include="JUL\Macros.h" />
+    <ClInclude Include="JUL\Map_Ext.h" />
+    <ClInclude Include="JUL\Memory.h" />
+    <ClInclude Include="JUL\Non_Copyable.h" />
+    <ClInclude Include="JUL\Pointer.h" />
+    <ClInclude Include="JUL\Print.h" />
+    <ClInclude Include="JUL\Profiling.h" />
+    <ClInclude Include="JUL\Random.h" />
+    <ClInclude Include="JUL\Ring.h" />
+    <ClInclude Include="JUL\Set_Ext.h" />
+    <ClInclude Include="JUL\Sort.h" />
+    <ClInclude Include="JUL\Spin_Lock.h" />
+    <ClInclude Include="JUL\String_Ext.h" />
+    <ClInclude Include="JUL\Strong_Type.h" />
+    <ClInclude Include="JUL\Thread_Pool.h" />
+    <ClInclude Include="JUL\Tuple_Ext.h" />
+    <ClInclude Include="JUL\Types.h" />
+    <ClInclude Include="JUL\Variant_Ext.h" />
+    <ClInclude Include="JUL\Vec2.h" />
+    <ClInclude Include="JUL\Vec3.h" />
+    <ClInclude Include="JUL\Vector_Ext.h" />
+    <ClInclude Include="src\Components\Box_Collider_Component.h" />
+    <ClInclude Include="src\Systems\Collision_System.h" />
+    <ClInclude Include="src\Events\Collision_Event.h" />
+    <ClInclude Include="src\Event_Bus\Event_Bus.h" />
+    <ClInclude Include="src\Event_Bus\Event.h" />
+    <ClInclude Include="src\Systems\Damage_System.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\glm\detail\func_common.inl" />

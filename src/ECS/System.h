@@ -23,7 +23,7 @@ public:
 
 private:
 	Signature m_component_signature;
-	std::vector<Entity> entities;
+	std::vector<Entity> m_entities;
 	bool m_entities_changed = false;
 };
 

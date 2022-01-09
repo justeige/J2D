@@ -7,6 +7,8 @@
 #include "Movement_System.h"
 #include "Render_System.h"
 #include "Animation_System.h"
+#include "Collision_System.h"
+#include "Damage_System.h"
 
 #endif // !SYSTEMS_H
 
