@@ -106,6 +106,7 @@ void Game::setup()
 	m->registry->add_system<Animation_System>();
 	m->registry->add_system<Collision_System>();
 	m->registry->add_system<Damage_System>();
+	m->registry->add_system<Keyboard_Control_System>();
 
 	m->asset_store->add_texture(m->renderer, AID_Tank, "./assets/images/tank-panther-right.png");
 	m->asset_store->add_texture(m->renderer, AID_Truck, "./assets/images/truck-ford-right.png");
@@ -166,6 +167,8 @@ void Game::process_input()
 			if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
 				m->isRunning = false;
 			}
+
+			m->event_bus->emit<Key_Pressed_Event>(sdl_event.key.keysym.sym);
 			break;
 
 		default:
@@ -192,6 +195,7 @@ void Game::update()
 
 	// event subscriptions are per frame
 	m->registry->system<Damage_System>().subscribe_to_events(m->event_bus);
+	m->registry->system<Keyboard_Control_System>().subscribe_to_events(m->event_bus);
 
 	// update systems & registry
 	m->registry->update_entities();

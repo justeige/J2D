@@ -9,6 +9,7 @@
 #include "Animation_System.h"
 #include "Collision_System.h"
 #include "Damage_System.h"
+#include "Keyboard_Control_System.h"
 
 #endif // !SYSTEMS_H
 

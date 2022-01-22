@@ -336,6 +336,8 @@
     <ClInclude Include="src\Event_Bus\Event_Bus.h" />
     <ClInclude Include="src\Event_Bus\Event.h" />
     <ClInclude Include="src\Systems\Damage_System.h" />
+    <ClInclude Include="src\Events\Key_Pressed_Event.h" />
+    <ClInclude Include="src\Systems\Keyboard_Control_System.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\glm\detail\func_common.inl" />

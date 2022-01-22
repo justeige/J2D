@@ -40,6 +40,7 @@
     <ClCompile Include="src\Systems\Render_System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Events\Key_Pressed_Event.h" />
     <ClInclude Include="src\Event_Bus\Event.h" />
     <ClInclude Include="src\Event_Bus\Event_Bus.h" />
     <ClInclude Include="JUL\Array_Ext.h" />
@@ -350,6 +351,7 @@
     <ClInclude Include="src\SDL_fwd.h" />
     <ClInclude Include="src\Systems\Collision_System.h" />
     <ClInclude Include="src\Systems\Damage_System.h" />
+    <ClInclude Include="src\Systems\Keyboard_Control_System.h" />
     <ClInclude Include="src\Systems\Movement_System.h" />
     <ClInclude Include="src\Systems\Render_System.h" />
     <ClInclude Include="src\Systems\Systems.h" />
