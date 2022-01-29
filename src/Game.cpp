@@ -19,6 +19,15 @@ using namespace jul::types;
 #include <fstream>
 
 // ---------------------------------------
+// Game statics
+// ---------------------------------------
+u32 Game::window_width  = 0;
+u32 Game::window_height = 0;
+u32 Game::map_width     = 0;
+u32 Game::map_height    = 0;
+
+
+// ---------------------------------------
 // Game constants
 // ---------------------------------------
 
@@ -34,9 +43,8 @@ struct Game::Data {
 	bool isRunning         = false;
 	SDL_Window*   window   = nullptr;
 	SDL_Renderer* renderer = nullptr;
+	SDL_Rect      camera = {};
 
-	u32 window_width       = 0;
-	u32 window_height      = 0;
 	u32 ms_previous_frame  = 0;
 
 	Unique<Registry>    registry    = std::make_unique<Registry>();
@@ -63,15 +71,19 @@ void Game::init()
 
 	SDL_DisplayMode display_mode;
 	SDL_GetCurrentDisplayMode(0, &display_mode);
-	m->window_width  = display_mode.w;
-	m->window_height = display_mode.h;
+	Game::window_width  = display_mode.w;
+	Game::window_height = display_mode.h;
+
+	// for debugging // TODO remove
+	Game::window_width  = 1024;
+	Game::window_height = 800;
 
 	m->window = SDL_CreateWindow(
 		"J2D Engine",           // title
 		SDL_WINDOWPOS_CENTERED, // x
 		SDL_WINDOWPOS_CENTERED, // y
-		m->window_width,        // w
-		m->window_height,       // h
+		Game::window_width,     // w
+		Game::window_height,    // h
 		SDL_WINDOW_BORDERLESS   // flags
 	);
 
@@ -92,7 +104,13 @@ void Game::init()
 	}
 
 	// changes the video-mode to fullscreen
-	SDL_SetWindowFullscreen(m->window, SDL_WINDOW_FULLSCREEN);
+	SDL_SetWindowFullscreen(m->window, SDL_WINDOW_BORDERLESS);
+
+	// set the camera
+	m->camera.x = 0;
+	m->camera.y = 0;
+	m->camera.w = Game::window_width;
+	m->camera.h = Game::window_height;
 
 	m->isRunning = true;
 }
@@ -107,25 +125,33 @@ void Game::setup()
 	m->registry->add_system<Collision_System>();
 	m->registry->add_system<Damage_System>();
 	m->registry->add_system<Keyboard_Control_System>();
+	m->registry->add_system<Camera_Movement_System>();
 
-	m->asset_store->add_texture(m->renderer, AID_Tank, "./assets/images/tank-panther-right.png");
-	m->asset_store->add_texture(m->renderer, AID_Truck, "./assets/images/truck-ford-right.png");
-	m->asset_store->add_texture(m->renderer, AID_Chopper, "./assets/images/chopper.png");
-	m->asset_store->add_texture(m->renderer, AID_Radar, "./assets/images/radar.png");
-	m->asset_store->add_texture(m->renderer, AID_Jungle, "./assets/tilemaps/jungle.png");
+	m->asset_store->add_texture(m->renderer, AID_Tank,    "./assets/images/tank-panther-right.png");
+	m->asset_store->add_texture(m->renderer, AID_Truck,   "./assets/images/truck-ford-right.png");
+	m->asset_store->add_texture(m->renderer, AID_Chopper, "./assets/images/chopper-spritesheet.png");
+	m->asset_store->add_texture(m->renderer, AID_Radar,   "./assets/images/radar.png");
+	m->asset_store->add_texture(m->renderer, AID_Jungle,  "./assets/tilemaps/jungle.png");
 
+	auto chopper_vel = 50;
 	auto chopper = m->registry->create_entity();
 	chopper.add_component<Transform_Component>(Vec2(100, 300), Vec2(1.0, 1.0), 1.0);
 	chopper.add_component<Rigid_Body_Component>(Vec2(0, 0));
 	chopper.add_component<Sprite_Component>(AID_Chopper, 32, 32, 1);
-	chopper.add_component<Animation_Component>(2, 5, true);
+	chopper.add_component<Animation_Component>(2, 15, true);
+	chopper.add_component<Camera_Follow_Component>();
+	chopper.add_component<Keyboard_Controlled_Component>(
+		Vec2 { 0, -1 * chopper_vel }, 
+		Vec2 { chopper_vel, 0 }, 
+		Vec2 { 0, chopper_vel }, 
+		Vec2 {-1 * chopper_vel,0 }
+	);
 
 	auto radar = m->registry->create_entity();
-	radar.add_component<Transform_Component>(Vec2(m->window_width - 75, 20), Vec2(1.0, 1.0), 1.0);
+	radar.add_component<Transform_Component>(Vec2(Game::window_width - 75, 20), Vec2(1.0, 1.0), 1.0);
 	radar.add_component<Rigid_Body_Component>(Vec2(0, 0));
-	radar.add_component<Sprite_Component>(AID_Radar, 64, 64, 2);
+	radar.add_component<Sprite_Component>(AID_Radar, 64, 64, 2, true);
 	radar.add_component<Animation_Component>(8, 5, true);
-
 
 	auto tank = m->registry->create_entity();
 	tank.add_component<Transform_Component>(Vec2(10, 30));
@@ -203,6 +229,7 @@ void Game::update()
 	m->registry->system<Movement_System>().update(delta_time);
 	m->registry->system<Animation_System>().update();
 	m->registry->system<Collision_System>().update(m->event_bus);
+	m->registry->system<Camera_Movement_System>().update(m->camera);
 }
 
 void Game::render()
@@ -210,7 +237,7 @@ void Game::render()
 	SDL_SetRenderDrawColor(m->renderer, 21, 21, 21, 255);
 	SDL_RenderClear(m->renderer);
 
-	m->registry->system<Render_System>().update(m->renderer, m->asset_store);
+	m->registry->system<Render_System>().update(m->renderer, m->asset_store, m->camera);
 
 	SDL_RenderPresent(m->renderer);
 }
@@ -246,8 +273,11 @@ void Game::load_tilemap(const char* name)
 			const auto tile_x = x * tile_scale * tile_size;
 			const auto tile_y = y * tile_scale * tile_size;
 			tile.add_component<Transform_Component>(Vec2(tile_x, tile_y), Vec2(tile_scale, tile_scale), 0.0);
-			tile.add_component<Sprite_Component>(AID_Tile_Map, tile_size, tile_size, 0, src_rect_x, src_rect_y);
+			tile.add_component<Sprite_Component>(AID_Tile_Map, tile_size, tile_size, 0, false, src_rect_x, src_rect_y);
 		}
 	}
 	map_stream.close();
+
+	Game::map_width  = map_num_cols * tile_size * tile_scale;
+	Game::map_height = map_num_rows * tile_size * tile_scale;
 }

@@ -10,6 +10,7 @@
 #include "Collision_System.h"
 #include "Damage_System.h"
 #include "Keyboard_Control_System.h"
+#include "Camera_Movement_System.h"
 
 #endif // !SYSTEMS_H
 

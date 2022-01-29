@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <memory>
-
+#include <stdint.h>
 
 class Game {
 public:
@@ -12,6 +12,11 @@ public:
 	void init();
 	void run();
 	void destroy();
+
+	static uint32_t window_width;
+	static uint32_t window_height;
+	static uint32_t map_width;
+	static uint32_t map_height;
 
 private:
 	void process_input();

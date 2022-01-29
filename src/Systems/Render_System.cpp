@@ -13,7 +13,7 @@ Render_System::Render_System()
 	require_component<Transform_Component>();
 }
 
-void Render_System::update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>& asset_store)
+void Render_System::update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>& asset_store, SDL_Rect& camera)
 {
 	// TODO use changed flag from system and store renderable entites as parameters
 
@@ -24,7 +24,7 @@ void Render_System::update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>&
 	std::vector<Renderable_Entity> renderable_entities;
 	for (auto entity : system_entities()) {
 		Renderable_Entity renderable_entity;
-		renderable_entity.sprite_comp = entity.component<Sprite_Component>();
+		renderable_entity.sprite_comp    = entity.component<Sprite_Component>();
 		renderable_entity.transform_comp = entity.component<Transform_Component>();
 		renderable_entities.emplace_back(renderable_entity);
 	}
@@ -37,7 +37,7 @@ void Render_System::update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>&
 		const auto transform = entity.transform_comp;
 		const auto sprite    = entity.sprite_comp;
 		const auto src_rect  = sprite.src_rect;
-		const auto dst_rect  = create_rect_from(sprite, transform);
+		const auto dst_rect  = create_rect_from(sprite, transform, camera);
 
 		SDL_RenderCopyEx(
 			renderer,

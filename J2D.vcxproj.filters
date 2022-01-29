@@ -338,6 +338,9 @@
     <ClInclude Include="src\Systems\Damage_System.h" />
     <ClInclude Include="src\Events\Key_Pressed_Event.h" />
     <ClInclude Include="src\Systems\Keyboard_Control_System.h" />
+    <ClInclude Include="src\Components\Keyboard_Controlled_Component.h" />
+    <ClInclude Include="src\Components\Camera_Follow_Component.h" />
+    <ClInclude Include="src\Systems\Camera_Movement_System.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\glm\detail\func_common.inl" />

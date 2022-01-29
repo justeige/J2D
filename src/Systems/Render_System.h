@@ -10,7 +10,7 @@ class Render_System : public System {
 public:
 	Render_System();
 
-	void update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>& asset_store);
+	void update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>& asset_store, SDL_Rect& camera);
 };
 
 #endif // !RENDER_SYSTEM_H
