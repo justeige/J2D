@@ -341,6 +341,11 @@
     <ClInclude Include="src\Components\Keyboard_Controlled_Component.h" />
     <ClInclude Include="src\Components\Camera_Follow_Component.h" />
     <ClInclude Include="src\Systems\Camera_Movement_System.h" />
+    <ClInclude Include="src\Components\Project_Emitter_Component.h" />
+    <ClInclude Include="src\Systems\Projectile_Emit_System.h" />
+    <ClInclude Include="src\Components\Health_Component.h" />
+    <ClInclude Include="src\Components\Projectile_Component.h" />
+    <ClInclude Include="src\Systems\Projektile_Lifecycle_System.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\glm\detail\func_common.inl" />

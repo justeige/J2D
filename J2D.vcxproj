@@ -41,7 +41,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Components\Camera_Follow_Component.h" />
+    <ClInclude Include="src\Components\Health_Component.h" />
     <ClInclude Include="src\Components\Keyboard_Controlled_Component.h" />
+    <ClInclude Include="src\Components\Projectile_Component.h" />
+    <ClInclude Include="src\Components\Project_Emitter_Component.h" />
     <ClInclude Include="src\Events\Key_Pressed_Event.h" />
     <ClInclude Include="src\Event_Bus\Event.h" />
     <ClInclude Include="src\Event_Bus\Event_Bus.h" />
@@ -356,6 +359,8 @@
     <ClInclude Include="src\Systems\Damage_System.h" />
     <ClInclude Include="src\Systems\Keyboard_Control_System.h" />
     <ClInclude Include="src\Systems\Movement_System.h" />
+    <ClInclude Include="src\Systems\Projectile_Emit_System.h" />
+    <ClInclude Include="src\Systems\Projektile_Lifecycle_System.h" />
     <ClInclude Include="src\Systems\Render_System.h" />
     <ClInclude Include="src\Systems\Systems.h" />
   </ItemGroup>

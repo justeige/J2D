@@ -7,7 +7,9 @@ using Vec2 = glm::vec2;
 
 #include <JUL/Container.h>
 #include <JUL/Pointer.h>
+#include <JUL/Types.h>
 using namespace jul;
+using namespace types;
 
 #include <typeindex>
 using Type_Index = std::type_index;

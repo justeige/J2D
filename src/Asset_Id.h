@@ -26,5 +26,6 @@ const Asset_Id AID_Jungle("tilemap-image");
 const Asset_Id AID_Tile_Map("tilemap-image");
 const Asset_Id AID_Chopper("chopper-image");
 const Asset_Id AID_Radar("radar-image");
+const Asset_Id AID_Bullet("bullet-image");
 
 #endif // ASSET_ID_H

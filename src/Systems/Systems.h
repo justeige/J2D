@@ -11,6 +11,8 @@
 #include "Damage_System.h"
 #include "Keyboard_Control_System.h"
 #include "Camera_Movement_System.h"
+#include "Projectile_Emit_System.h"
+#include "Projektile_Lifecycle_System.h"
 
 #endif // !SYSTEMS_H
 

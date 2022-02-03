@@ -126,27 +126,35 @@ void Game::setup()
 	m->registry->add_system<Damage_System>();
 	m->registry->add_system<Keyboard_Control_System>();
 	m->registry->add_system<Camera_Movement_System>();
+	m->registry->add_system<Projectile_Emit_System>();
+	m->registry->add_system<Projectile_Lifecycle_System>();
 
 	m->asset_store->add_texture(m->renderer, AID_Tank,    "./assets/images/tank-panther-right.png");
 	m->asset_store->add_texture(m->renderer, AID_Truck,   "./assets/images/truck-ford-right.png");
 	m->asset_store->add_texture(m->renderer, AID_Chopper, "./assets/images/chopper-spritesheet.png");
 	m->asset_store->add_texture(m->renderer, AID_Radar,   "./assets/images/radar.png");
+	m->asset_store->add_texture(m->renderer, AID_Bullet,  "./assets/images/bullet.png");
 	m->asset_store->add_texture(m->renderer, AID_Jungle,  "./assets/tilemaps/jungle.png");
 
-	auto chopper_vel = 50;
-	auto chopper = m->registry->create_entity();
-	chopper.add_component<Transform_Component>(Vec2(100, 300), Vec2(1.0, 1.0), 1.0);
-	chopper.add_component<Rigid_Body_Component>(Vec2(0, 0));
-	chopper.add_component<Sprite_Component>(AID_Chopper, 32, 32, 1);
-	chopper.add_component<Animation_Component>(2, 15, true);
-	chopper.add_component<Camera_Follow_Component>();
-	chopper.add_component<Keyboard_Controlled_Component>(
-		Vec2 { 0, -1 * chopper_vel }, 
-		Vec2 { chopper_vel, 0 }, 
-		Vec2 { 0, chopper_vel }, 
-		Vec2 {-1 * chopper_vel,0 }
-	);
-
+	/*player*/ {
+		auto chopper_vel = 50;
+		auto chopper = m->registry->create_entity();
+		chopper.tag("player");
+		chopper.add_component<Transform_Component>(Vec2(100, 300), Vec2(1.0, 1.0), 1.0);
+		chopper.add_component<Rigid_Body_Component>(Vec2(0, 0));
+		chopper.add_component<Sprite_Component>(AID_Chopper, 32, 32, 1);
+		chopper.add_component<Animation_Component>(2, 15, true);
+		chopper.add_component<Box_Collider_Component>(32, 32);
+		chopper.add_component<Camera_Follow_Component>();
+		chopper.add_component<Health_Component>(100);
+		chopper.add_component<Projectile_Emitter_Component>(Vec2{ 150.0, 150.0 }, 0, 10000, 10, true);
+		chopper.add_component<Keyboard_Controlled_Component>(
+			Vec2 { 0, -1 * chopper_vel }, 
+			Vec2 { chopper_vel, 0 }, 
+			Vec2 { 0, chopper_vel }, 
+			Vec2 {-1 * chopper_vel,0 }
+		);
+	}
 	auto radar = m->registry->create_entity();
 	radar.add_component<Transform_Component>(Vec2(Game::window_width - 75, 20), Vec2(1.0, 1.0), 1.0);
 	radar.add_component<Rigid_Body_Component>(Vec2(0, 0));
@@ -154,16 +162,22 @@ void Game::setup()
 	radar.add_component<Animation_Component>(8, 5, true);
 
 	auto tank = m->registry->create_entity();
+	tank.group("enemies");
 	tank.add_component<Transform_Component>(Vec2(10, 30));
 	tank.add_component<Rigid_Body_Component>(Vec2(20, 0));
 	tank.add_component<Sprite_Component>(AID_Tank, 32, 32, 1);
 	tank.add_component<Box_Collider_Component>(32, 32);
+	tank.add_component<Projectile_Emitter_Component>(Vec2{100.0, 0}, 5000, 3000, 10, false);
+	tank.add_component<Health_Component>(100);
 	
 	auto truck = m->registry->create_entity();
+	truck.group("enemies");
 	truck.add_component<Transform_Component>(Vec2(180, 30));
 	truck.add_component<Rigid_Body_Component>(Vec2(-20, 0));
 	truck.add_component<Sprite_Component>(AID_Truck, 32, 32, 1);
 	truck.add_component<Box_Collider_Component>(32, 32);
+	truck.add_component<Projectile_Emitter_Component>(Vec2{ 0, 100 }, 2000, 5000, 10, false);
+	truck.add_component<Health_Component>(100);
 
 	load_tilemap("./assets/tilemaps/jungle.map");
 }
@@ -222,6 +236,7 @@ void Game::update()
 	// event subscriptions are per frame
 	m->registry->system<Damage_System>().subscribe_to_events(m->event_bus);
 	m->registry->system<Keyboard_Control_System>().subscribe_to_events(m->event_bus);
+	m->registry->system<Projectile_Emit_System>().subscribe_to_events(m->event_bus);
 
 	// update systems & registry
 	m->registry->update_entities();
@@ -230,6 +245,8 @@ void Game::update()
 	m->registry->system<Animation_System>().update();
 	m->registry->system<Collision_System>().update(m->event_bus);
 	m->registry->system<Camera_Movement_System>().update(m->camera);
+	m->registry->system<Projectile_Emit_System>().update(m->registry);
+	m->registry->system<Projectile_Lifecycle_System>().update();
 }
 
 void Game::render()
@@ -270,6 +287,7 @@ void Game::load_tilemap(const char* name)
 			map_stream.ignore();
 
 			auto tile = m->registry->create_entity();
+			tile.group("tiles");
 			const auto tile_x = x * tile_scale * tile_size;
 			const auto tile_y = y * tile_scale * tile_size;
 			tile.add_component<Transform_Component>(Vec2(tile_x, tile_y), Vec2(tile_scale, tile_scale), 0.0);

@@ -60,6 +60,27 @@ public:
 	template <class TSystem>
 	TSystem& system() const;
 
+
+
+	// ---------------------
+	// Tag managment
+	// ---------------------
+	void   tag_entity(Entity e, const Str& tag);
+	bool   entity_has_tag(Entity e, const Str& tag) const;
+	Entity entity_by_tag(const Str& tag)  const;
+	void   remove_entity_tag(Entity e);
+
+
+
+	// ---------------------
+	// Group managment
+	// ---------------------
+	void group_entity(Entity e, const Str& group);
+	bool entity_belongs_to_group(Entity e, const Str& group) const;
+	Vec<Entity> entities_by_group(const Str& group)  const;
+	void        remove_entity_from_group(Entity e);
+
+
 private:
 	int            m_num_entities = 0;
 	Deq<int>       m_free_ids;
@@ -68,6 +89,12 @@ private:
 	Vec<Signature> m_entity_component_signatures;
 	Vec<Shared<Object_Pool_Base>>         m_component_pools;
 	UMap<std::type_index, Shared<System>> m_systems;
+
+	// grouping and tagging
+	UMap<Str, Entity>      m_entity_per_tag;
+	UMap<int, Str>         m_tag_per_entity;
+	UMap<Str, Set<Entity>> m_entities_per_group;
+	UMap<int, Str>         m_group_per_entity;
 };
 
 #endif // REGISTRY_H

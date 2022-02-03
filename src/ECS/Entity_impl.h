@@ -15,5 +15,10 @@ T& Entity::component() const
 	return m_registry->component<T>(*this);
 }
 
+template <class T>
+bool Entity::has_component() const
+{
+	return m_registry->has_component<T>(*this);
+}
 
 #endif // ENTITY_IMPL_H
