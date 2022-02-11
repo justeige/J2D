@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 Asset_Store::Asset_Store()
 {
@@ -19,9 +20,14 @@ void Asset_Store::clear_assets()
 		SDL_DestroyTexture(texture);
 	}
 	m_textures.clear();
+
+	for (auto [_, font] : m_fonts) {
+		TTF_CloseFont(font);
+	}
+	m_fonts.clear();
 }
 
-bool Asset_Store::add_texture(SDL_Renderer* renderer, const Asset_Id& asset_id, const std::string& file_path)
+bool Asset_Store::add_texture(SDL_Renderer* renderer, const Asset_Id& asset_id, const Str& file_path)
 {
 	auto surface = IMG_Load(file_path.c_str());
 	if (!surface) { 
@@ -41,9 +47,18 @@ bool Asset_Store::add_texture(SDL_Renderer* renderer, const Asset_Id& asset_id, 
 	return true;
 }
 
-SDL_Texture* Asset_Store::texture(const Asset_Id& asset_id) const
+SDL_Texture* Asset_Store::texture(const Asset_Id& asset_id)
 {
-	const auto [_, texture] = *m_textures.find(asset_id.value());
-	
-	return texture;
+	return m_textures[asset_id.value()];
+}
+
+void Asset_Store::add_font(const Asset_Id& asset_id, const Str& file_path, int font_size)
+{
+	auto font = TTF_OpenFont(file_path.c_str(), font_size);
+	m_fonts.emplace(asset_id, font);
+}
+
+TTF_Font* Asset_Store::font(const Asset_Id& asset_id)
+{
+	return m_fonts[asset_id.value()];
 }

@@ -24,6 +24,8 @@ private:
 	void render();
 	void setup();
 	void load_tilemap(const char* name);
+	void load_assets();
+	void load_systems();
 
 	struct Data;
 	std::unique_ptr<Data> m;

@@ -24,10 +24,6 @@ void Registry::add_component(Entity e, TArgs&& ...args)
 
 	auto component_pool = std::static_pointer_cast<Object_Pool<T>>(m_component_pools[component_id]);
 
-	if (entity_id >= component_pool->size()) {
-		component_pool->resize(m_num_entities);
-	}
-
 	T new_component(std::forward<TArgs>(args)...);
 
 	component_pool->set(entity_id, new_component);
@@ -42,6 +38,9 @@ void Registry::remove_component(Entity e)
 {
 	const auto component_id = Component<T>::id();
 	const auto entity_id = e.id();
+
+	auto component_pool = std::static_pointer_cast<Object_Pool<T>>(m_component_pools[component_id]);
+	component_pool->remove(entity_id);
 
 	m_entity_component_signatures[entity_id].set(component_id, false);
 }

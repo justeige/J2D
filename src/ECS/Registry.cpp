@@ -40,6 +40,13 @@ void Registry::update_entities()
 		const auto entity_id = e.id();
 		remove_entity_from_systems(e);
 		m_entity_component_signatures[entity_id].reset();
+
+		for (auto pool : m_component_pools) {
+			if (pool) {
+				pool->remove_entity_from_pool(entity_id);
+			}
+		}
+
 		m_free_ids.push_back(entity_id);
 
 		remove_entity_tag(e);

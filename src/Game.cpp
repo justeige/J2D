@@ -21,6 +21,7 @@ using namespace jul::types;
 // ---------------------------------------
 // Game statics
 // ---------------------------------------
+// TODO move into singleton "Sizing"
 u32 Game::window_width  = 0;
 u32 Game::window_height = 0;
 u32 Game::map_width     = 0;
@@ -52,6 +53,15 @@ struct Game::Data {
 	Unique<Event_Bus>   event_bus   = std::make_unique<Event_Bus>();
 };
 
+
+// ---------------------------------------
+// Game internal functions - Declaration
+// ---------------------------------------
+
+void create_player(Unique<Registry>& reg);
+void create_tank(Unique<Registry>& reg);
+void create_truck(Unique<Registry>& reg);
+void create_radar(Unique<Registry>& reg);
 
 
 Game::Game() : m{new Data}
@@ -119,6 +129,34 @@ void Game::init()
 
 void Game::setup()
 {
+	load_systems();
+	load_assets();
+
+	create_player(m->registry);
+	create_radar(m->registry);
+	create_tank(m->registry);
+	create_truck(m->registry);
+
+	//auto label = m->registry->create_entity();
+	//label.add_component<Text_Label_Component>(POS, "this is my text", AID_Charriot_Font);
+
+	load_tilemap("./assets/tilemaps/jungle.map");
+}
+
+void Game::load_assets()
+{
+	m->asset_store->add_texture(m->renderer, AID_Tank, "./assets/images/tank-panther-right.png");
+	m->asset_store->add_texture(m->renderer, AID_Truck, "./assets/images/truck-ford-right.png");
+	m->asset_store->add_texture(m->renderer, AID_Chopper, "./assets/images/chopper-spritesheet.png");
+	m->asset_store->add_texture(m->renderer, AID_Radar, "./assets/images/radar.png");
+	m->asset_store->add_texture(m->renderer, AID_Bullet, "./assets/images/bullet.png");
+	m->asset_store->add_texture(m->renderer, AID_Jungle, "./assets/tilemaps/jungle.png");
+
+	m->asset_store->add_font(AID_Charriot_Font, "./assets/fonts/charriot.ttf", 14);
+}
+
+void Game::load_systems()
+{
 	m->registry->add_system<Movement_System>();
 	m->registry->add_system<Render_System>();
 	m->registry->add_system<Animation_System>();
@@ -128,58 +166,6 @@ void Game::setup()
 	m->registry->add_system<Camera_Movement_System>();
 	m->registry->add_system<Projectile_Emit_System>();
 	m->registry->add_system<Projectile_Lifecycle_System>();
-
-	m->asset_store->add_texture(m->renderer, AID_Tank,    "./assets/images/tank-panther-right.png");
-	m->asset_store->add_texture(m->renderer, AID_Truck,   "./assets/images/truck-ford-right.png");
-	m->asset_store->add_texture(m->renderer, AID_Chopper, "./assets/images/chopper-spritesheet.png");
-	m->asset_store->add_texture(m->renderer, AID_Radar,   "./assets/images/radar.png");
-	m->asset_store->add_texture(m->renderer, AID_Bullet,  "./assets/images/bullet.png");
-	m->asset_store->add_texture(m->renderer, AID_Jungle,  "./assets/tilemaps/jungle.png");
-
-	/*player*/ {
-		auto chopper_vel = 50;
-		auto chopper = m->registry->create_entity();
-		chopper.tag("player");
-		chopper.add_component<Transform_Component>(Vec2(100, 300), Vec2(1.0, 1.0), 1.0);
-		chopper.add_component<Rigid_Body_Component>(Vec2(0, 0));
-		chopper.add_component<Sprite_Component>(AID_Chopper, 32, 32, 1);
-		chopper.add_component<Animation_Component>(2, 15, true);
-		chopper.add_component<Box_Collider_Component>(32, 32);
-		chopper.add_component<Camera_Follow_Component>();
-		chopper.add_component<Health_Component>(100);
-		chopper.add_component<Projectile_Emitter_Component>(Vec2{ 150.0, 150.0 }, 0, 10000, 10, true);
-		chopper.add_component<Keyboard_Controlled_Component>(
-			Vec2 { 0, -1 * chopper_vel }, 
-			Vec2 { chopper_vel, 0 }, 
-			Vec2 { 0, chopper_vel }, 
-			Vec2 {-1 * chopper_vel,0 }
-		);
-	}
-	auto radar = m->registry->create_entity();
-	radar.add_component<Transform_Component>(Vec2(Game::window_width - 75, 20), Vec2(1.0, 1.0), 1.0);
-	radar.add_component<Rigid_Body_Component>(Vec2(0, 0));
-	radar.add_component<Sprite_Component>(AID_Radar, 64, 64, 2, true);
-	radar.add_component<Animation_Component>(8, 5, true);
-
-	auto tank = m->registry->create_entity();
-	tank.group("enemies");
-	tank.add_component<Transform_Component>(Vec2(10, 30));
-	tank.add_component<Rigid_Body_Component>(Vec2(20, 0));
-	tank.add_component<Sprite_Component>(AID_Tank, 32, 32, 1);
-	tank.add_component<Box_Collider_Component>(32, 32);
-	tank.add_component<Projectile_Emitter_Component>(Vec2{100.0, 0}, 5000, 3000, 10, false);
-	tank.add_component<Health_Component>(100);
-	
-	auto truck = m->registry->create_entity();
-	truck.group("enemies");
-	truck.add_component<Transform_Component>(Vec2(180, 30));
-	truck.add_component<Rigid_Body_Component>(Vec2(-20, 0));
-	truck.add_component<Sprite_Component>(AID_Truck, 32, 32, 1);
-	truck.add_component<Box_Collider_Component>(32, 32);
-	truck.add_component<Projectile_Emitter_Component>(Vec2{ 0, 100 }, 2000, 5000, 10, false);
-	truck.add_component<Health_Component>(100);
-
-	load_tilemap("./assets/tilemaps/jungle.map");
 }
 
 void Game::run()
@@ -298,4 +284,61 @@ void Game::load_tilemap(const char* name)
 
 	Game::map_width  = map_num_cols * tile_size * tile_scale;
 	Game::map_height = map_num_rows * tile_size * tile_scale;
+}
+
+// ----------------------------------------------
+// Game internal functions - Implementation
+// ----------------------------------------------
+void create_player(Unique<Registry>& reg)
+{
+	auto chopper_vel = 50;
+	auto chopper = reg->create_entity();
+	chopper.tag("player");
+	chopper.add_component<Transform_Component>(Vec2(100, 300), Vec2(1.0, 1.0), 1.0);
+	chopper.add_component<Rigid_Body_Component>(Vec2(0, 0));
+	chopper.add_component<Sprite_Component>(AID_Chopper, 32, 32, 1);
+	chopper.add_component<Animation_Component>(2, 15, true);
+	chopper.add_component<Box_Collider_Component>(32, 32);
+	chopper.add_component<Camera_Follow_Component>();
+	chopper.add_component<Health_Component>(100);
+	chopper.add_component<Projectile_Emitter_Component>(Vec2{ 150.0, 150.0 }, 0, 10000, 10, true);
+	chopper.add_component<Keyboard_Controlled_Component>(
+		Vec2{ 0, -1 * chopper_vel },
+		Vec2{ chopper_vel, 0 },
+		Vec2{ 0, chopper_vel },
+		Vec2{ -1 * chopper_vel,0 }
+	);
+}
+
+void create_tank(Unique<Registry>& reg)
+{
+	auto tank = reg->create_entity();
+	tank.group("enemies");
+	tank.add_component<Transform_Component>(Vec2(10, 30));
+	tank.add_component<Rigid_Body_Component>(Vec2(20, 0));
+	tank.add_component<Sprite_Component>(AID_Tank, 32, 32, 1);
+	tank.add_component<Box_Collider_Component>(32, 32);
+	tank.add_component<Projectile_Emitter_Component>(Vec2{ 100.0, 0 }, 5000, 3000, 10, false);
+	tank.add_component<Health_Component>(100);
+}
+
+void create_truck(Unique<Registry>& reg)
+{
+	auto truck = reg->create_entity();
+	truck.group("enemies");
+	truck.add_component<Transform_Component>(Vec2(180, 30));
+	truck.add_component<Rigid_Body_Component>(Vec2(0, 20));
+	truck.add_component<Sprite_Component>(AID_Truck, 32, 32, 1);
+	truck.add_component<Box_Collider_Component>(32, 32);
+	truck.add_component<Projectile_Emitter_Component>(Vec2{ 0, 100 }, 2000, 5000, 10, false);
+	truck.add_component<Health_Component>(100);
+}
+
+void create_radar(Unique<Registry>& reg)
+{
+	auto radar = reg->create_entity();
+	radar.add_component<Transform_Component>(Vec2(Game::window_width - 75, 20), Vec2(1.0, 1.0), 1.0);
+	radar.add_component<Rigid_Body_Component>(Vec2(0, 0));
+	radar.add_component<Sprite_Component>(AID_Radar, 64, 64, 2, true);
+	radar.add_component<Animation_Component>(8, 5, true);
 }

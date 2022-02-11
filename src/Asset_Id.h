@@ -28,4 +28,6 @@ const Asset_Id AID_Chopper("chopper-image");
 const Asset_Id AID_Radar("radar-image");
 const Asset_Id AID_Bullet("bullet-image");
 
+const Asset_Id AID_Charriot_Font("charriot-font");
+
 #endif // ASSET_ID_H
