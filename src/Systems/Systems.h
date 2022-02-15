@@ -13,6 +13,8 @@
 #include "Camera_Movement_System.h"
 #include "Projectile_Emit_System.h"
 #include "Projektile_Lifecycle_System.h"
+#include "Render_Text_System.h"
+#include "Render_Healthbar_System.h"
 
 #endif // !SYSTEMS_H
 

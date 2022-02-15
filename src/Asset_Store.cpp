@@ -52,10 +52,17 @@ SDL_Texture* Asset_Store::texture(const Asset_Id& asset_id)
 	return m_textures[asset_id.value()];
 }
 
-void Asset_Store::add_font(const Asset_Id& asset_id, const Str& file_path, int font_size)
+bool Asset_Store::add_font(const Asset_Id& asset_id, const Str& file_path, int font_size)
 {
 	auto font = TTF_OpenFont(file_path.c_str(), font_size);
+	if (!font) {
+		Logger::err("Assets: Failed to load " + file_path);
+		return false;
+	}
+
 	m_fonts.emplace(asset_id, font);
+	Logger::log("Assets: Loaded " + file_path);
+	return true;
 }
 
 TTF_Font* Asset_Store::font(const Asset_Id& asset_id)

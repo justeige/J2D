@@ -11,6 +11,7 @@
 #include "Project_Emitter_Component.h"
 #include "Health_Component.h"
 #include "Projectile_Component.h"
+#include "Text_Label_Component.h"
 
 #include <SDL.h>
 

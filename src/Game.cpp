@@ -79,6 +79,11 @@ void Game::init()
 		return;
 	}
 
+	if (TTF_Init() != 0) {
+		Logger::err("Error initializing TTF.");
+		return;
+	}
+
 	SDL_DisplayMode display_mode;
 	SDL_GetCurrentDisplayMode(0, &display_mode);
 	Game::window_width  = display_mode.w;
@@ -137,22 +142,25 @@ void Game::setup()
 	create_tank(m->registry);
 	create_truck(m->registry);
 
-	//auto label = m->registry->create_entity();
-	//label.add_component<Text_Label_Component>(POS, "this is my text", AID_Charriot_Font);
+	auto label = m->registry->create_entity();
+	SDL_Color white = { 255, 255, 255 };
+	label.add_component<Text_Label_Component>(Vec2{100, 100}, "this is my text", AID_Charriot_Font, white, true);
 
 	load_tilemap("./assets/tilemaps/jungle.map");
 }
 
 void Game::load_assets()
 {
-	m->asset_store->add_texture(m->renderer, AID_Tank, "./assets/images/tank-panther-right.png");
-	m->asset_store->add_texture(m->renderer, AID_Truck, "./assets/images/truck-ford-right.png");
+	m->asset_store->add_texture(m->renderer, AID_Tank,    "./assets/images/tank-panther-right.png");
+	m->asset_store->add_texture(m->renderer, AID_Truck,   "./assets/images/truck-ford-right.png");
 	m->asset_store->add_texture(m->renderer, AID_Chopper, "./assets/images/chopper-spritesheet.png");
-	m->asset_store->add_texture(m->renderer, AID_Radar, "./assets/images/radar.png");
-	m->asset_store->add_texture(m->renderer, AID_Bullet, "./assets/images/bullet.png");
-	m->asset_store->add_texture(m->renderer, AID_Jungle, "./assets/tilemaps/jungle.png");
+	m->asset_store->add_texture(m->renderer, AID_Radar,   "./assets/images/radar.png");
+	m->asset_store->add_texture(m->renderer, AID_Bullet,  "./assets/images/bullet.png");
+	m->asset_store->add_texture(m->renderer, AID_Jungle,  "./assets/tilemaps/jungle.png");
 
 	m->asset_store->add_font(AID_Charriot_Font, "./assets/fonts/charriot.ttf", 14);
+	m->asset_store->add_font(AID_Pico8_5_Font,  "./assets/fonts/arial.ttf", 5);
+	m->asset_store->add_font(AID_Pico8_10_Font, "./assets/fonts/arial.ttf", 10);
 }
 
 void Game::load_systems()
@@ -166,6 +174,8 @@ void Game::load_systems()
 	m->registry->add_system<Camera_Movement_System>();
 	m->registry->add_system<Projectile_Emit_System>();
 	m->registry->add_system<Projectile_Lifecycle_System>();
+	m->registry->add_system<Render_Text_System>();
+	m->registry->add_system<Render_Healthbar_System>();
 }
 
 void Game::run()
@@ -241,6 +251,8 @@ void Game::render()
 	SDL_RenderClear(m->renderer);
 
 	m->registry->system<Render_System>().update(m->renderer, m->asset_store, m->camera);
+	m->registry->system<Render_Text_System>().update(m->renderer, m->asset_store, m->camera);
+	m->registry->system<Render_Healthbar_System>().update(m->renderer, m->asset_store, m->camera);
 
 	SDL_RenderPresent(m->renderer);
 }

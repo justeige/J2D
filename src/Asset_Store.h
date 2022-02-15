@@ -15,7 +15,7 @@ public:
 	bool add_texture(SDL_Renderer* renderer, const Asset_Id& asset_id, const Str& file_path);
 	SDL_Texture* texture(const Asset_Id& asset_id);
 
-	void add_font(const Asset_Id& asset_id, const Str& file_path, int font_size);
+	bool add_font(const Asset_Id& asset_id, const Str& file_path, int font_size);
 	TTF_Font* font(const Asset_Id& asset_id);
 
 private:

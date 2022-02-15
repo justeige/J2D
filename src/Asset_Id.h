@@ -29,5 +29,7 @@ const Asset_Id AID_Radar("radar-image");
 const Asset_Id AID_Bullet("bullet-image");
 
 const Asset_Id AID_Charriot_Font("charriot-font");
+const Asset_Id AID_Pico8_5_Font("pico8-font-5");
+const Asset_Id AID_Pico8_10_Font("pico8-font-10");
 
 #endif // ASSET_ID_H
