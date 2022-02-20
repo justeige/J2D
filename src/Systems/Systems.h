@@ -15,6 +15,7 @@
 #include "Projektile_Lifecycle_System.h"
 #include "Render_Text_System.h"
 #include "Render_Healthbar_System.h"
+#include "Render_GUI_System.h"
 
 #endif // !SYSTEMS_H
 

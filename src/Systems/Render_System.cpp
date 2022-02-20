@@ -26,6 +26,18 @@ void Render_System::update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>&
 		Renderable_Entity renderable_entity;
 		renderable_entity.sprite_comp    = entity.component<Sprite_Component>();
 		renderable_entity.transform_comp = entity.component<Transform_Component>();
+
+		const auto is_entity_is_outside_camera_view = 
+			renderable_entity.transform_comp.position.x + (renderable_entity.transform_comp.scale.x * renderable_entity.sprite_comp.width) < camera.x ||
+			renderable_entity.transform_comp.position.x > camera.x + camera.w || 
+			renderable_entity.transform_comp.position.y + (renderable_entity.transform_comp.scale.y * renderable_entity.sprite_comp.height) < camera.y ||
+			renderable_entity.transform_comp.position.y > camera.y + camera.h
+			;
+
+		if (is_entity_is_outside_camera_view && !renderable_entity.sprite_comp.is_fixed) {
+			continue; // no need to render
+		}
+
 		renderable_entities.emplace_back(renderable_entity);
 	}
 
@@ -46,7 +58,7 @@ void Render_System::update(SDL_Renderer* renderer, std::unique_ptr<Asset_Store>&
 			&dst_rect,
 			transform.rotation,
 			nullptr, // == center
-			SDL_FLIP_NONE
+			sprite.flip
 		);
 	}
 }

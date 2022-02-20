@@ -27,6 +27,7 @@ const Asset_Id AID_Tile_Map("tilemap-image");
 const Asset_Id AID_Chopper("chopper-image");
 const Asset_Id AID_Radar("radar-image");
 const Asset_Id AID_Bullet("bullet-image");
+const Asset_Id AID_Tree("tree-image");
 
 const Asset_Id AID_Charriot_Font("charriot-font");
 const Asset_Id AID_Pico8_5_Font("pico8-font-5");

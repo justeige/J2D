@@ -18,6 +18,11 @@ using namespace jul::types;
 #include <iso646.h>
 #include <fstream>
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_sdl.h>
+#include <imgui/imgui_impl_sdl.h>
+#include <imgui/imgui_impl_sdlrenderer.h>
+
 // ---------------------------------------
 // Game statics
 // ---------------------------------------
@@ -118,6 +123,12 @@ void Game::init()
 		return;
 	}
 
+	ImGui::CreateContext();
+	ImGui_ImplSDL2_InitForSDLRenderer(m->window, m->renderer);
+	ImGui_ImplSDLRenderer_Init(m->renderer);
+	ImGuiSDL::Initialize(m->renderer, Game::window_width, Game::window_height);
+
+
 	// changes the video-mode to fullscreen
 	SDL_SetWindowFullscreen(m->window, SDL_WINDOW_BORDERLESS);
 
@@ -142,6 +153,18 @@ void Game::setup()
 	create_tank(m->registry);
 	create_truck(m->registry);
 
+	auto treeA = m->registry->create_entity();
+	treeA.group("obstacles");
+	treeA.add_component<Transform_Component>(Vec2(600, 495));
+	treeA.add_component<Sprite_Component>(AID_Tree, 16, 32, 2);
+	treeA.add_component<Box_Collider_Component>(16, 32);
+
+	auto treeB = m->registry->create_entity();
+	treeB.group("obstacles");
+	treeB.add_component<Transform_Component>(Vec2(400, 495));
+	treeB.add_component<Sprite_Component>(AID_Tree, 16, 32, 2);
+	treeB.add_component<Box_Collider_Component>(16, 32);
+
 	auto label = m->registry->create_entity();
 	SDL_Color white = { 255, 255, 255 };
 	label.add_component<Text_Label_Component>(Vec2{100, 100}, "this is my text", AID_Charriot_Font, white, true);
@@ -156,6 +179,8 @@ void Game::load_assets()
 	m->asset_store->add_texture(m->renderer, AID_Chopper, "./assets/images/chopper-spritesheet.png");
 	m->asset_store->add_texture(m->renderer, AID_Radar,   "./assets/images/radar.png");
 	m->asset_store->add_texture(m->renderer, AID_Bullet,  "./assets/images/bullet.png");
+	m->asset_store->add_texture(m->renderer, AID_Tree,    "./assets/images/tree.png");
+	
 	m->asset_store->add_texture(m->renderer, AID_Jungle,  "./assets/tilemaps/jungle.png");
 
 	m->asset_store->add_font(AID_Charriot_Font, "./assets/fonts/charriot.ttf", 14);
@@ -176,6 +201,7 @@ void Game::load_systems()
 	m->registry->add_system<Projectile_Lifecycle_System>();
 	m->registry->add_system<Render_Text_System>();
 	m->registry->add_system<Render_Healthbar_System>();
+	m->registry->add_system<Render_GUI_System>();
 }
 
 void Game::run()
@@ -193,6 +219,17 @@ void Game::process_input()
 {
 	SDL_Event sdl_event;
 	while (SDL_PollEvent(&sdl_event)) {
+		// ImGui SDL input
+		ImGui_ImplSDL2_ProcessEvent(&sdl_event);
+		auto& io = ImGui::GetIO();
+		auto mouse_x = 0, mouse_y = 0;
+		const auto buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
+
+		io.MousePos = ImVec2(mouse_x, mouse_y);
+		io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+		io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+
+		// handle core SDL events
 		switch (sdl_event.type)
 		{
 		case SDL_QUIT:
@@ -230,6 +267,7 @@ void Game::update()
 	m->event_bus->reset();
 
 	// event subscriptions are per frame
+	m->registry->system<Movement_System>().subscribe_to_events(m->event_bus);
 	m->registry->system<Damage_System>().subscribe_to_events(m->event_bus);
 	m->registry->system<Keyboard_Control_System>().subscribe_to_events(m->event_bus);
 	m->registry->system<Projectile_Emit_System>().subscribe_to_events(m->event_bus);
@@ -254,11 +292,17 @@ void Game::render()
 	m->registry->system<Render_Text_System>().update(m->renderer, m->asset_store, m->camera);
 	m->registry->system<Render_Healthbar_System>().update(m->renderer, m->asset_store, m->camera);
 
+	// if debug
+	m->registry->system<Render_GUI_System>().update(m->registry);
+	// end
+
 	SDL_RenderPresent(m->renderer);
 }
 
 void Game::destroy()
 {
+	ImGuiSDL::Deinitialize();
+	ImGui::DestroyContext();
 	SDL_DestroyRenderer(m->renderer);
 	SDL_DestroyWindow(m->window);
 	SDL_Quit();
@@ -326,7 +370,7 @@ void create_tank(Unique<Registry>& reg)
 {
 	auto tank = reg->create_entity();
 	tank.group("enemies");
-	tank.add_component<Transform_Component>(Vec2(10, 30));
+	tank.add_component<Transform_Component>(Vec2(500, 495));
 	tank.add_component<Rigid_Body_Component>(Vec2(20, 0));
 	tank.add_component<Sprite_Component>(AID_Tank, 32, 32, 1);
 	tank.add_component<Box_Collider_Component>(32, 32);
