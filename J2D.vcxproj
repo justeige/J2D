@@ -19,6 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Level_Loader.cpp" />
+    <ClCompile Include="libs\imgui\imgui_demo.cpp" />
+    <ClCompile Include="libs\imgui\imgui_impl_sdl.cpp" />
+    <ClCompile Include="libs\imgui\imgui_impl_sdlrenderer.cpp" />
+    <ClCompile Include="libs\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\Event_Bus\Event_Bus.cpp" />
     <ClCompile Include="src\ECS\Component.cpp" />
     <ClCompile Include="src\ECS\Entity.cpp" />
@@ -29,7 +34,6 @@
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="libs\glm\detail\glm.cpp" />
     <ClCompile Include="libs\imgui\imgui.cpp" />
-    <ClCompile Include="libs\imgui\imgui_demo.cpp" />
     <ClCompile Include="libs\imgui\imgui_draw.cpp" />
     <ClCompile Include="libs\imgui\imgui_sdl.cpp" />
     <ClCompile Include="libs\imgui\imgui_widgets.cpp" />
@@ -37,14 +41,19 @@
     <ClCompile Include="src\Systems\Collision_System.cpp" />
     <ClCompile Include="src\Systems\Damage_System.cpp" />
     <ClCompile Include="src\Systems\Movement_System.cpp" />
+    <ClCompile Include="src\Systems\Render_GUI_System.cpp" />
     <ClCompile Include="src\Systems\Render_System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Level_Loader.h" />
+    <ClInclude Include="libs\imgui\imgui_impl_sdl.h" />
+    <ClInclude Include="libs\imgui\imgui_impl_sdlrenderer.h" />
     <ClInclude Include="src\Components\Camera_Follow_Component.h" />
     <ClInclude Include="src\Components\Health_Component.h" />
     <ClInclude Include="src\Components\Keyboard_Controlled_Component.h" />
     <ClInclude Include="src\Components\Projectile_Component.h" />
     <ClInclude Include="src\Components\Project_Emitter_Component.h" />
+    <ClInclude Include="src\Components\Text_Label_Component.h" />
     <ClInclude Include="src\Events\Key_Pressed_Event.h" />
     <ClInclude Include="src\Event_Bus\Event.h" />
     <ClInclude Include="src\Event_Bus\Event_Bus.h" />
@@ -361,10 +370,14 @@
     <ClInclude Include="src\Systems\Movement_System.h" />
     <ClInclude Include="src\Systems\Projectile_Emit_System.h" />
     <ClInclude Include="src\Systems\Projektile_Lifecycle_System.h" />
+    <ClInclude Include="src\Systems\Render_GUI_System.h" />
+    <ClInclude Include="src\Systems\Render_Healthbar_System.h" />
     <ClInclude Include="src\Systems\Render_System.h" />
+    <ClInclude Include="src\Systems\Render_Text_System.h" />
     <ClInclude Include="src\Systems\Systems.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\scripts\level1.lua" />
     <None Include="libs\glm\detail\func_common.inl" />
     <None Include="libs\glm\detail\func_common_simd.inl" />
     <None Include="libs\glm\detail\func_exponential.inl" />
